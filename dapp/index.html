@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT Minting App</title>
+</head>
+<body>
+    <h1>NFT Minting App</h1>
+
+    <button id="mintButton" style="display: none;">Mint NFT</button>
+    <p id="userAddress"></p>
+    <p id="userBalance"></p>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.5/web3.min.js"></script>
+
+    <script>
+        async function connectToMetaMask() {
+            try {
+                // Check if MetaMask is installed
+                if (typeof window.ethereum === 'undefined') {
+                    console.error('MetaMask not found');
+                    return;
+                }
+
+                // Initialize web3 with MetaMask provider
+                const web3 = new Web3(window.ethereum);
+
+                // Request MetaMask to enable the connection
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                
+                // Get the user's address
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                const userAddress = accounts[0];
+
+                // Display the user's address
+                document.getElementById('userAddress').textContent = `Address: ${userAddress}`;
+
+                // Listen for account changes
+                ethereum.on('accountsChanged', (newAccounts) => {
+                    const newUserAddress = newAccounts[0];
+                    document.getElementById('userAddress').textContent = `Address: ${newUserAddress}`;
+                    fetchBalance(web3, newUserAddress);
+                });
+
+                // Fetch the balance initially
+                fetchBalance(web3, userAddress);
+
+                console.log('Connected to MetaMask:', userAddress);
+                document.getElementById('mintButton').style.display = 'block';
+            } catch (error) {
+                console.error('Error connecting to MetaMask:', error);
+            }
+        }
+
+        async function fetchBalance(web3, userAddress) {
+            try {
+                // Get the user's balance in Sepolia
+                const balance = await web3.eth.getBalance(userAddress);
+
+                // Display the user's balance
+                document.getElementById('userBalance').textContent = `Balance in Sepolia: ${web3.utils.fromWei(balance, 'ether')} SEPOLIA`;
+            } catch (error) {
+                console.error('Error fetching balance:', error);
+            }
+        }
+
+        async function mintNFT() {
+            // Your minting code here
+        }
+
+        // Automatically connect to MetaMask when the page loads
+        window.addEventListener('load', async () => {
+            await connectToMetaMask();
+        });
+
+        document.getElementById('mintButton').addEventListener('click', mintNFT);
+    </script>
+</body>
+</html>
